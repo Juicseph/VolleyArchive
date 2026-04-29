@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fresno State Volleyball — Alumni Archive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="styles.css">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="data.js"></script>
+
+<!-- Thumbnail / splash for bundler -->
+<template id="__bundler_thumbnail" data-bg-color="#0d2240">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0d2240"/>
+    <rect x="540" y="240" width="120" height="120" fill="#ffffff" stroke="#b1102b" stroke-width="6"/>
+    <text x="600" y="338" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-weight="900" font-size="100" fill="#007934">V</text>
+    <text x="600" y="460" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="62" fill="#ffffff" letter-spacing="2">FRESNO STATE</text>
+    <text x="600" y="528" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="62" fill="#b1102b" letter-spacing="2">VOLLEYBALL</text>
+    <g transform="translate(300, 580)">
+      <rect x="0" y="0" width="600" height="40" fill="#ffffff"/>
+      <g fill="#b1102b">
+        <rect x="0" y="0" width="40" height="40"/>
+        <rect x="80" y="0" width="40" height="40"/>
+        <rect x="160" y="0" width="40" height="40"/>
+        <rect x="240" y="0" width="40" height="40"/>
+        <rect x="320" y="0" width="40" height="40"/>
+        <rect x="400" y="0" width="40" height="40"/>
+        <rect x="480" y="0" width="40" height="40"/>
+        <rect x="560" y="0" width="40" height="40"/>
+      </g>
+    </g>
+    <text x="600" y="690" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="28" fill="#f4ead5" opacity="0.85">Alumni Archive · 1965 — Today</text>
+  </svg>
+</template>
+
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="pages.jsx"></script>
+<script type="text/babel" src="interactive.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  const [page, setPage] = React.useState('home');
+  const [year, setYear] = React.useState(null);
+  const [decade, setDecade] = React.useState(null);
+
+  // Map year to decade id
+  const yearToDecade = (y) => {
+    if (y < 1970) return '60s';
+    if (y < 1980) return '70s';
+    if (y < 1990) return '80s';
+    if (y < 2000) return '90s';
+    if (y < 2010) return '00s';
+    if (y < 2020) return '10s';
+    return '20s';
+  };
+
+  const handleNav = (p) => { setPage(p); setYear(null); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const handleYear = (y) => setYear(y);
+  const handleDecade = (d) => { setDecade(d); setPage('decade'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  let body;
+  if (page === 'home') body = <HomePage onNav={handleNav} onYearClick={handleYear} onDecadeClick={handleDecade} />;
+  else if (page === 'decades') body = <HomePage onNav={handleNav} onYearClick={handleYear} onDecadeClick={handleDecade} />;
+  else if (page === 'decade') body = <DecadePage decadeId={decade} onYearClick={handleYear} onBack={() => handleNav('home')} />;
+  else if (page === 'coaches') body = <CoachesPage onBack={() => handleNav('home')} />;
+  else if (page === 'trophy') body = <TrophyCase onBack={() => handleNav('home')} onYearClick={handleYear} />;
+  else if (page === 'roster-search') body = <RosterSearch onBack={() => handleNav('home')} onYearClick={handleYear} />;
+  else if (page === 'timeline') body = <TimelinePage onBack={() => handleNav('home')} onYearClick={handleYear} />;
+  else if (page === 'memories') body = <MemoryWall onBack={() => handleNav('home')} />;
+  else if (page === 'gallery') body = <PhotoWall onBack={() => handleNav('home')} />;
+
+  return (
+    <div>
+      <Nav active={page} onNav={handleNav} />
+      {body}
+      <Footer />
+      {year && <YearDetail year={year} onClose={() => setYear(null)} onPickYear={(y) => setYear(y)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
